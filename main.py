@@ -51,6 +51,14 @@ if get_only_valid_number:
     cleaned_df = cleaned_df.drop(col_phones, axis = 1)
     cleaned_df = cleaned_df.query("phone != ''")
 
+# get only valid number phone
+remove_doublons = input(
+    "Do you want to remove doublons ? (y/n)"
+).lower() in ["y", "yes", "oui", "o"]
+
+if remove_doublons:
+    cleaned_df = cleaned_df.drop_duplicates(["phone"])
+
 # Export the cleaned DataFrame to a new CSV file
 output_file_path = "/".join(file.split("/")[:-1]) + "/" + file.split("/")[-1].split(".")[0] + "_cleaned.csv"
 
@@ -59,5 +67,5 @@ if cleaned_df.shape[0] == df.shape[0] or get_only_valid_number:
 else:
     print("ERROR")
 
-cleaned_df.to_csv(output_file_path, index=False)
+cleaned_df.applymap(lambda x: str(x).replace(";", "") if not pd.isna(x) else x).to_csv(output_file_path, index=False, sep=";")
 print("Cleaned file saved at: " + "/".join(file.split("/")[:-1]))
